@@ -26,11 +26,6 @@ const char *entry_error_messages[] = {
 	"ERROR_INVALID_EL0_32"	
 };
 
-void enable_interrupt_controller()
-{
-	put32(ENABLE_IRQS_1, SYSTEM_TIMER_IRQ_1);
-}
-
 void show_invalid_entry_message(int type, unsigned long esr, unsigned long address)
 {
 	printf("%s, ESR: %x, address: %x\r\n", entry_error_messages[type], esr, address);
@@ -38,9 +33,9 @@ void show_invalid_entry_message(int type, unsigned long esr, unsigned long addre
 
 void handle_irq(void)
 {
-	unsigned int irq = get32(IRQ_PENDING_1);
+	unsigned int irq = get32(CORE0_INTERRUPT_SOURCES); // Get first core interrupt status
 	switch (irq) {
-		case (SYSTEM_TIMER_IRQ_1):
+		case (LOCAL_TIMER_INTERRUPT): // Check if local timer interrupt occurred on core0
 			handle_timer_irq();
 			break;
 		default:
